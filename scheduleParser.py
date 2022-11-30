@@ -1,15 +1,18 @@
 import time
-import datetime
+# import datetime
 
+
+weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+workdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 def getTime():
-	dateToday = datetime.date.today
-	day = time.strftime("%A")
-	hour = time.strftime("%H")
-	minute = time.strftime("%M")
-	sec = time.strftime("%S")
+	day = str(time.strftime("%A"))
+	# date = str(datetime.datetime.now().date())
+	hour = str(time.strftime("%H"))
+	minute = str(time.strftime("%M"))
+	sec = str(time.strftime("%S"))
 
-	return {"date" : datetime.date(dateToday), "day": day, "hour": hour, "minute": minute, "sec": sec}
+	return {"day": day, "hour": hour, "minute": minute, "sec": sec}
 
 
 class ScheduleParser:
@@ -19,16 +22,37 @@ class ScheduleParser:
 
 	def checkSched(row):
 		now = getTime()
+		
+		# chatID, message, repeat, date, hour, minute, peopleInvolved
+		
+		if row['repeat'] == 'daily':
+			if now['hour'] == row['hour'] and now['minute'] == row['minute']:
+				return True
+			
+		if row['repeat'] == 'every_week':
+			if now['day'] == row['day'] and now['hour'] == row['hour'] and now['minute'] == row['minute']:
+				return True
+			
+		if row['repeat'] == 'weekdays':
+			if now['day'] in weekdays and now['hour'] == row['hour'] and now['minute'] == row['minute']:
+				return True
 
-		print(str(now['date']))
+		if row['repeat'] == 'workdays':
+			if now['day'] in workdays and now['hour'] == row['hour'] and now['minute'] == row['minute']:
+				return True
 
 		return False
 
+	
 	def viewRaw(row):
 		return dict(row)
 
+	
+	def readTime():
+		now = getTime()
+		return(f"{now['hour']}:{now['minute']}:{now['sec']}")
 
-# Repeat commands: once, daily, every_week, weekdays
+# Repeat commands: daily, every_week, weekdays
 # Date command: MM/DD/YYYY
 # hourMinute command: HH:MM
 # People Involved: 'everyone', usernames
@@ -36,5 +60,3 @@ class ScheduleParser:
 
 
 
-
-# Currently cannot access dates using MM/DD/YYYY format. Tried time and datetime modules
